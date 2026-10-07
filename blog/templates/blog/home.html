@@ -1,0 +1,37 @@
+{% extends "blog/base.html" %}
+{% block content %}
+    {% if posts %}
+        {% for post in posts %}
+        <article class="media content-section">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <img src="{{ post.creator.profile.image.url }}" width="60" height="60" class="rounded-circle" style="vertical-align: middle; margin-right: 5px;"> 
+                    <a href="{% url 'profile' %}"> Created by : {{post.creator}},</a>
+                    <small class="text-muted">on {{ post.date_created|date:"F d, Y" }}</small>
+                    {% if post.model_type == 'API' %}
+                        <small style="color: #ff2600"> - {{ post.model_type }} Model</small>
+                    {% else %}
+                        <small style="color: #2ea31a"> - {{ post.model_type }} Model</small>
+                    {% endif %}
+                    <br>
+                </div>
+
+                <div class="article-metadata" style="padding-bottom: 5px;">
+                    <small class="text-muted">Last update: {{ post.last_message_date|date:"F d, Y at H:i" }} | </small>
+                    <small class="text-muted">Total of interaction : {{ post.interaction_count }}</small>
+                </div>
+                
+                <div class="agent-header">
+                    <img src="{{ post.avatar.url }}" width="40" height="40" class="rounded-circle"> 
+                    <h2 style="margin: 0px;"><a class="article-title" href="{% url 'post-detail' post.id %}">Agent : {{ post.name }}</a></h2>
+                </div>
+                
+                <p class="article-content" style="margin-top: 10px;">Description : {{ post.description }}</p>
+            </div>
+        </article>
+        {% endfor %}
+    
+    {% else %}
+        <h2>No Agent created.</h2>
+    {% endif %}
+{% endblock content %}

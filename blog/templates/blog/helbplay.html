@@ -1,0 +1,80 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<article class="media content-section">
+
+    <div class="media-body">
+        <h2 style="border-bottom: 1px solid rgb(226, 209, 209);">WELCOME TO HELBPLAYS2526!</h2>
+
+            <div class="row">
+                <div class="col">
+                    <img id="helbplay-image" src="https://helbplays2526.alwaysdata.net/frame.jpg">
+                </div>
+
+                <div class="col">
+                    <div id="chat-container" class="chat-container">
+                        
+                        <div id="helbplay-chat">
+                            {% if chat_messages %}
+                                {% for msg in chat_messages %}
+                                    <div style="margin-bottom: 5px;">
+                                        {% if msg.user == user.username %}
+                                            <strong style="color: #003cff;">{{ msg.user }}</strong>
+                                        {% else %}
+                                            <strong>{{ msg.user }}</strong>
+                                        {% endif %}
+                                        : {{ msg.text }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>No message</p>
+                            {% endif %}
+                        </div>
+                    </div> 
+                </div>
+            </div>
+
+        <div style="margin-top: 5px">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" name="message" class="form-control" placeholder="Send a message..." required>
+                    <button class="btn btn-outline-primary" type="submit">Send</button>
+                </div>
+            </form>
+        </div>
+
+    </div> 
+</article>
+
+<div class="banner">
+    up down left right 8624(▲●✖■) 17 39 -+ | up down left right 8624(▲●✖■) 17 39 -+
+</div>
+
+<script>
+    $(document).ready(function() {
+
+        //fonction pour scroll en bas du chat
+        function scrollChat() {
+            const chatBox = $('#chat-container');
+            chatBox.scrollTop(chatBox[0].scrollHeight);
+        }
+
+        scrollChat();
+
+        //refresh tt les 2secs
+        setInterval(function() {
+
+            //image
+            var timestamp = new Date().getTime();
+            $("#helbplay-image").attr("src", "https://helbplays2526.alwaysdata.net/frame.jpg?" + new Date().getTime());//Force le rafraichissement de l'image
+
+            //chat
+            $("#chat-container").load(window.location.href + " #helbplay-chat", function() {
+                scrollChat();
+            });
+        }, 1000);
+    });
+</script>
+{% endblock content %}

@@ -1,0 +1,74 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<article class="media content-section">
+    <img class="rounded-circle article-img" src="{{ object.avatar.url }}">
+    
+    <div class="media-body">
+        <div class="article-metadata">
+
+            <h2>
+                {{ object.name }}
+                {% if object.model_type == 'API' %}
+                    <small style="color: #ff2600"> - {{ object.model_type }} Model (llama-3.3-70b)</small>
+                {% else %}
+                    <small style="color: #0420f5"> - {{ object.model_type }} Model (qwen2.5:0.5b)</small>
+                {% endif %}
+            </h2>
+
+            {% if object.creator == user %}
+            <div>
+                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Update</a>
+                <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete</a>
+            </div>
+            {% endif %}
+        </div>
+      
+        <p class="article-content" ><h3> Pre prompt of agent :</h3> {{ object.pre_prompt }}</p>
+
+        <h3 style="border-top: 1px solid #dbdbdb; padding-top: 5px">Conversation</h3>
+
+        <div id="conversation">
+            {% if chat_messages %}
+                {% for msg in chat_messages %}
+                    {% if msg.name == object.name %}
+                        <!-- agent qui parle -->
+                        <strong>{{ msg.name }}</strong> : {{ msg.text }} <br>
+                    {% else %}
+                        <!-- cest le user -->
+                        {% if msg.name == user.username %}
+                            <a href="{% url 'profile' %}" style= "color: #003cff;">{{ msg.name }}</a>
+                        {% else %}
+                            <a href="{% url 'user-profile' msg.name %}" style= "color: #ff3300;">{{ msg.name }}</a>
+                        {% endif %}
+                        </strong> : {{ msg.text }} <br>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p>No message</p>
+            {% endif %}
+        </div>
+
+        <div style="margin-top: 5px">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" name="message" class="form-control" placeholder="Ask anything" required>
+                    <button class="btn btn-outline-primary" type="submit">Send</button>
+                </div>
+            </form>
+        </div>
+
+    </div> 
+</article>
+
+<script>
+    $(document).ready(function() {
+        setInterval(function() {
+            $("#conversation").load(window.location.href + " #conversation");
+        }, 1000);
+    });
+</script>
+{% endblock content %}
+<!--class="form-control" utiliser pour les <input> pour que ce soit plus beau -->

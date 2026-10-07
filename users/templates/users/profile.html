@@ -1,0 +1,79 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="content-section">
+        <div class="media">
+            <img class="rounded-circle account-img" src="{{ profile_user.profile.image.url }}">
+            <div class="media-body">
+                <h2 class="account-heading">{{ profile_user.username }}</h2>
+                <p class="text-secondary">{{ profile_user.email }}</p>
+            </div>
+        </div>
+
+        {% if profile_user == user %}
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4">Profile Info</legend>
+                    {{ u_form|crispy }}
+                    {{ p_form|crispy }}
+                </fieldset>
+                <div class="form-group">
+                    <button class="btn btn-outline-info" type="submit">Update</button>
+                </div>
+            </form>
+
+            <h3>Daily Activity</h3>
+            <p>Graphique à faire..</p>
+        {% endif %}
+        
+        <h3>Overall Stats</h3>
+            <div style="border: 1px solid #dbdbdb; padding: 15px;">
+            {% if agents_stats %}
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+                <canvas id="myChart" style="width:100%;max-width:1000px; margin-top:20px;"></canvas>
+                <script>
+                    // Convertir les données Django en JS (|safe = anti echapement html)
+                    var xValues = [
+                        {% for agent in agents_stats %}
+                            "{{ agent.name|safe}}",
+                        {% endfor %}
+                    ];
+
+                    var yValues = [
+                        {% for agent in agents_stats %}
+                            {{ agent.count }},
+                        {% endfor %}
+                    ];
+
+                    let barColors = "blue";
+
+                    new Chart("myChart", {
+                        type: "bar",
+                        data: {
+                            labels: xValues,
+                            datasets: [{
+                                label : 'Messages ',
+                                backgroundColor: barColors,
+                                data: yValues
+                            }]
+                        },
+                        options: {
+                            legend: { display: false },
+                            scales: {
+                                yAxes: [{
+                                    ticks: { 
+                                        beginAtZero: true
+                                    }
+                                }],
+                            }
+                        }
+                    });
+                </script>
+
+            {% else %}
+                <p>No messages.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}
